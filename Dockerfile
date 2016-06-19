@@ -13,3 +13,7 @@ RUN mkdir /nlp/data
 ENV zipfile=glove.42B.300d.zip
 ADD http://nlp.stanford.edu/data/$zipfile /nlp/data
 RUN unzip /nlp/data/$zipfile -d /nlp/data
+RUN rm /nlp/data/$zipfile
+
+# prepend matrix dimensions for word2vec to read properly
+RUN sed -i '1i 1917494 300' /nlp/data/glove.42B.300d.txt
