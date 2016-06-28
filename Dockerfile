@@ -1,5 +1,6 @@
 FROM ubuntu
 MAINTAINER Adrian Lyjak
+EXPOSE 8000
 
 RUN apt-get update
 RUN apt-get install unzip -y
@@ -8,12 +9,7 @@ RUN apt-get install python -y
 RUN apt-get install python-pip -y
 RUN git clone https://github.com/3Top/word2vec-api /nlp
 RUN pip install -r /nlp/requirements.txt
-RUN mkdir /nlp/data
-# ENV zipfile=QuestionBank-Stanford-1.0.zip
-ENV zipfile=glove.42B.300d.zip
-ADD http://nlp.stanford.edu/data/$zipfile /nlp/data
-RUN unzip /nlp/data/$zipfile -d /nlp/data
-RUN rm /nlp/data/$zipfile
+RUN mkdir -p /nlp/data
+ADD vocab.txt /nlp/data
 
-# prepend matrix dimensions for word2vec to read properly
-RUN sed -i '1i 1917494 300' /nlp/data/glove.42B.300d.txt
+CMD python nlp/word2vec-api.py --model nlp/data/vocab.txt --host "0.0.0.0" --port 5000
